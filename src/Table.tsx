@@ -980,19 +980,17 @@ class Table extends React.Component<TableProps, TableState> {
     }
   }
 
-  calculateTableContextHeight(prevProps?: TableProps) {
+ calculateTableContextHeight(prevProps?: TableProps) {
     const table = this.tableRef.current;
-    const rows = table.querySelectorAll(`.${this.addPrefix('row')}`) || [];
-    const { height, autoHeight, rowHeight, affixHeader } = this.props;
-    const headerHeight = this.getTableHeaderHeight();
+    const rows = table.querySelectorAll(`:scope > div > div > .${this.addPrefix('row')}`) || [];
+    const { height, autoHeight, rowHeight } = this.props;
     const contentHeight = rows.length
       ? Array.from(rows)
           .map(row => getHeight(row) || rowHeight)
           .reduce((x, y) => x + y)
       : 0;
 
-    // 当设置 affixHeader 属性后要减掉两个 header 的高度
-    const nextContentHeight = contentHeight - (affixHeader ? headerHeight * 2 : headerHeight);
+    const nextContentHeight = contentHeight;
 
     if (nextContentHeight !== this.state.contentHeight) {
       this.setState({ contentHeight: nextContentHeight });
@@ -1020,7 +1018,7 @@ class Table extends React.Component<TableProps, TableState> {
 
     // 如果 scrollTop 的值大于可以滚动的范围 ，则重置 Y 坐标滚动条
     // 当 Table 为 virtualized 时， wheel 事件触发每次都会进入该逻辑， 避免在滚动到底部后滚动条重置, +SCROLLBAR_WIDTH
-    if (Math.abs(this.scrollY) + height - headerHeight > nextContentHeight + SCROLLBAR_WIDTH) {
+    if (Math.abs(this.scrollY) + height > nextContentHeight + SCROLLBAR_WIDTH) {
       this.scrollTop(this.scrollY);
     }
   }
